@@ -8,6 +8,14 @@ function gradToRad(grad) {
 	return grad * Math.PI / 180;
 }
 
+function color(r, g, b) {
+	return "#" + r.toString(16) + g.toString(16) + b.toString(16);
+}
+
+function randomColor() {
+	return color(parseInt(random(0, 255)), parseInt(random(0, 255)), parseInt(random(0, 255)));
+}
+
 console.debug('generator.js');
 var vm = new Vue({
 	el: '#bumblebee-generator-app',
@@ -28,7 +36,8 @@ var vm = new Vue({
 				padding: 0,
 				innerSize: 0,
 				outerSize: 0,
-				Y: 0
+				Y: 0,
+				color: ''
 			},
 			mouth: {
 				width: 0,
@@ -110,6 +119,7 @@ var vm = new Vue({
 			this.variables.eyes.outerSize = random(10, Math.max((this.variables.face - 3 * this.variables.eyes.padding) / 2, 10));
 			this.variables.eyes.innerSize = random(5, this.variables.eyes.outerSize / 2);
 			this.variables.eyes.Y = random(this.variables.Y, this.variables.Y + this.variables.height * 0.7);
+			this.variables.eyes.color = randomColor();
 
 			this.variables.mouth.X = random(this.variables.X, this.variables.X + 20);
 			this.variables.mouth.width = random(10, this.variables.X + this.variables.face - this.variables.mouth.X);
@@ -149,7 +159,7 @@ var vm = new Vue({
 				this.canvas.context.fillRect(this.variables.X + this.variables.face + i * this.variables.stripes.width, this.variables.Y, this.variables.stripes.width, this.variables.height);
 			}
 
-			this.canvas.context.fillStyle = "blue";
+			this.canvas.context.fillStyle = this.variables.eyes.color;
 			this.canvas.context.fillRect(this.variables.X + this.variables.eyes.padding, this.variables.eyes.Y, this.variables.eyes.outerSize, this.variables.eyes.outerSize);
 			this.canvas.context.fillRect(this.variables.X + 2 * this.variables.eyes.padding + this.variables.eyes.outerSize, this.variables.eyes.Y, this.variables.eyes.outerSize, this.variables.eyes.outerSize);
 
