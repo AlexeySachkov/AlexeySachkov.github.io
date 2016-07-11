@@ -4,6 +4,10 @@ function random(min, max) {
 	return Math.random() * (max - min) + min;
 }
 
+function gradToRad(grad) {
+	return grad * Math.PI / 180;
+}
+
 console.debug('generator.js');
 var vm = new Vue({
 	el: '#bumblebee-generator-app',
@@ -37,6 +41,7 @@ var vm = new Vue({
 				height: 0,
 				X: 0,
 				Y: 0,
+				angle: 0,
 				stripes: {
 					width: 0,
 					height: 0,
@@ -115,11 +120,12 @@ var vm = new Vue({
 			this.variables.wings.width = random(Math.max(this.variables.face, this.variables.back), this.variables.width);
 			this.variables.wings.height = random(this.variables.height / 7, this.variables.height / 2);
 			this.variables.wings.Y = this.variables.Y - this.variables.wings.height;
+			this.variables.wings.angle = random(-5, 5);
 
 			this.variables.wings.stripes.width = random(20, this.variables.wings.width - 10);
 			this.variables.wings.stripes.height = random(20, this.variables.wings.height - 10);
-			this.variables.wings.stripes.X = random(this.variables.wings.X + 10, this.variables.wings.X + this.variables.wings.width - this.variables.wings.stripes.width - 10);
-			this.variables.wings.stripes.Y = random(this.variables.wings.Y + 10, this.variables.wings.Y + this.variables.wings.height - this.variables.wings.stripes.height - 10);
+			this.variables.wings.stripes.X = random(10, this.variables.wings.width - this.variables.wings.stripes.width - 10);
+			this.variables.wings.stripes.Y = random(10, this.variables.wings.height - this.variables.wings.stripes.height - 10);
 		
 			this.variables.legs.width = random(3, 10);
 			this.variables.legs.height = random(10, this.variables.height / 4);
@@ -155,13 +161,17 @@ var vm = new Vue({
 			this.canvas.context.fillRect(this.variables.mouth.X, this.variables.mouth.Y, this.variables.mouth.width, this.variables.mouth.height);
 
 			this.canvas.context.fillStyle = "#fff";
-			this.canvas.context.fillRect(this.variables.wings.X, this.variables.wings.Y, this.variables.wings.width, this.variables.wings.height);
-
+			this.canvas.context.save();
+			this.canvas.context.translate(this.variables.wings.X, this.variables.wings.Y);
+			this.canvas.context.rotate(gradToRad(this.variables.wings.angle));
+			this.canvas.context.fillRect(0, 0, this.variables.wings.width, this.variables.wings.height);
+			
 			this.canvas.context.fillStyle = "lightblue";
 			this.canvas.context.fillRect(this.variables.wings.stripes.X, this.variables.wings.stripes.Y + this.variables.wings.stripes.height / 3, this.variables.wings.stripes.width, 3);
 			this.canvas.context.fillRect(this.variables.wings.stripes.X, this.variables.wings.stripes.Y + 2 * this.variables.wings.stripes.height / 3, this.variables.wings.stripes.width, 3);
 			this.canvas.context.fillRect(this.variables.wings.stripes.X + this.variables.wings.stripes.width / 3, this.variables.wings.stripes.Y, 3, this.variables.wings.stripes.height);
 			this.canvas.context.fillRect(this.variables.wings.stripes.X + 2 * this.variables.wings.stripes.width / 3, this.variables.wings.stripes.Y, 3, this.variables.wings.stripes.height);
+			this.canvas.context.restore();
 
 			this.canvas.context.fillStyle = "#000";
 			for (i = 1; i <= 6; ++i) {
