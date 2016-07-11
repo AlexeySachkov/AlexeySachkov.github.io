@@ -1,103 +1,172 @@
-console.log("generator script");
-
-var canvas = document.getElementById("canvas");
-var context = canvas.getContext("2d");
-
-var w = window,
-    d = document,
-    e = d.documentElement,
-    g = d.getElementsByTagName('body')[0],
-    windowWidth = w.innerWidth || e.clientWidth || g.clientWidth,
-    windowHeight = w.innerHeight|| e.clientHeight|| g.clientHeight;
-
-var navbarFixedTop = document.getElementById("navbar-fixed-top");
-var canvasContainer = document.getElementById("canvas-container");
-
-canvas.width = canvasContainer.offsetWidth;
-canvas.height = windowHeight - navbarFixedTop.offsetHeight;
-	
-var X = 500, Y = 200;
+Vue.config.debug = true;
 
 function random(min, max) {
 	return Math.random() * (max - min) + min;
 }
 
-var width = random(canvas.width / 10, canvas.width / 2);
-var height = random(canvas.height / 8, canvas.height / 3);
+console.debug('generator.js');
+var vm = new Vue({
+	el: '#bumblebee-generator-app',
+	data: {
+		variables: {
+			widht: 0,
+			height: 0,
+			X: 0,
+			Y: 0,
+			border: 0,
+			face: 0,
+			back: 0,
+			stripes: {
+				count: 0,
+				width: 0
+			},
+			eyes: {
+				padding: 0,
+				innerSize: 0,
+				outerSize: 0,
+				Y: 0
+			},
+			mouth: {
+				width: 0,
+				height: 0,
+				X: 0,
+				Y: 0
+			},
+			wings: {
+				width: 0,
+				height: 0,
+				X: 0,
+				Y: 0,
+				stripes: {
+					width: 0,
+					height: 0,
+					X: 0,
+					Y: 0
+				}
+			},
+			legs: {
+				width: 0,
+				height: 0,
+				padding: 0
+			}
+		},
+		canvas: {
+			element: document.getElementById('canvas'),
+			context: null,
+			width: 0,
+			height: 0
+		},
+		window: {
+			width: 0,
+			height: 0
+		}
+	},
+	ready: function () {
+		console.debug('ready');
+		var w = window,
+		    d = document,
+		    e = d.documentElement,
+		    g = d.getElementsByTagName('body')[0];
+	    this.window.width = w.innerWidth || e.clientWidth || g.clientWidth,
+	    this.window.height = w.innerHeight|| e.clientHeight|| g.clientHeight;
 
-var X = canvas.width / 2 - 0.5 * width;
-var Y = canvas.height / 2 - 0.75 * height;
+	    this.canvas.context = this.canvas.element.getContext('2d');
+	    this.canvas.width = this.canvas.element.width = this.canvas.element.parentNode.offsetWidth;
+	    this.canvas.height = this.canvas.element.height = this.window.height - this.canvas.element.parentNode.offsetHeight;
+	    console.debug(this.canvas);
 
-var border = random(0, 1);
+	    this.generate();
+	},
+	methods: {
+		generate: function () {
+			this.canvas.context.fillStyle = 'lightblue';
+			this.canvas.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-var face = random(Math.max(Math.floor(width / 10), 3 * 5 + 2 * 10), Math.floor(width / 3));
-var back = random(Math.floor(width / 10), Math.floor(width / 3));
+			this.randomizeVariables();
+			this.draw();
+		},
+		randomizeVariables: function () {
+			console.debug('randomizeVariables');
+			this.variables.width = random(this.canvas.width / 10, this.canvas.width / 2);
+			this.variables.height = random(this.canvas.height / 8, this.canvas.height / 3);
 
-var stripesNum = random(2, (width - face - back) / 10);
-var stripesWidth = (width - face - back) / stripesNum;
+			this.variables.X = this.canvas.width / 2 - 0.5 * this.variables.width;
+			this.variables.Y = this.canvas.height / 2 - 0.75 * this.variables.height;
 
-var eyePadding = random(5, Math.max((face - 2 * 10) / 3, 5));
-var eyeOuterSize = random(10, Math.max((face - 3 * eyePadding) / 2, 10));
-var eyeInnerSize = random(5, eyeOuterSize / 2);
-var eyeY = random(Y, Y + height * 0.7);
+			this.variables.border = random(0, 1);
 
-var mouthX = random(X, X + 20);
-var mouthWidth = random(10, X + face - mouthX);
-var mouthHeight = random(3, 15);
-var mouthY = random(eyeY + eyeOuterSize + 5, Y + height - mouthHeight - 5);
+			this.variables.face = random(Math.max(Math.floor(this.variables.width / 10), 3 * 5 + 2 * 10), Math.floor(this.variables.width / 3));
+			this.variables.back = random(Math.floor(this.variables.width / 10), Math.floor(this.variables.width / 3));
 
-var wingX = Math.min(random(X + face, X + width - back), X + width / 2);
-var wingWidth = random(Math.max(face, back), width);
-var wingHeight = random(height / 7, height / 2);
-var wingY = Y - wingHeight;
+			this.variables.stripes.count = random(2, (this.variables.width - this.variables.face - this.variables.back) / 10);
+			this.variables.stripes.width = (this.variables.width - this.variables.face - this.variables.back) / this.variables.stripes.count;
 
-var wingStripesWidth = random(20, wingWidth - 10);
-var wingStripesHeight = random(20, wingHeight - 10);
-var wingStripesX = random(wingX + 10, wingX + wingWidth - wingStripesWidth - 10);
-var wingStripesY = random(wingY + 10, wingY + wingHeight - wingStripesHeight - 10);
+			this.variables.eyes.padding = random(5, Math.max((this.variables.face - 2 * 10) / 3, 5));
+			this.variables.eyes.outerSize = random(10, Math.max((this.variables.face - 3 * this.variables.eyes.padding) / 2, 10));
+			this.variables.eyes.innerSize = random(5, this.variables.eyes.outerSize / 2);
+			this.variables.eyes.Y = random(this.variables.Y, this.variables.Y + this.variables.height * 0.7);
 
-var legsWidth = random(3, 10);
-var legsHeight = random(10, height / 4);
-var legsPadding = ((width - face - back - 6 * legsWidth) / 6);
+			this.variables.mouth.X = random(this.variables.X, this.variables.X + 20);
+			this.variables.mouth.width = random(10, this.variables.X + this.variables.face - this.variables.mouth.X);
+			this.variables.mouth.height = random(3, 15);
+			this.variables.mouth.Y = random(this.variables.eyes.Y + this.variables.eyes.outerSize + 5, this.variables.Y + this.variables.height - this.variables.mouth.height - 5);
+		
+			this.variables.wings.X = Math.min(random(this.variables.X + this.variables.face, this.variables.X + this.variables.width - this.variables.back), this.variables.X + this.variables.width / 2);
+			this.variables.wings.width = random(Math.max(this.variables.face, this.variables.back), this.variables.width);
+			this.variables.wings.height = random(this.variables.height / 7, this.variables.height / 2);
+			this.variables.wings.Y = this.variables.Y - this.variables.wings.height;
 
-var i;
+			this.variables.wings.stripes.width = random(20, this.variables.wings.width - 10);
+			this.variables.wings.stripes.height = random(20, this.variables.wings.height - 10);
+			this.variables.wings.stripes.X = random(this.variables.wings.X + 10, this.variables.wings.X + this.variables.wings.width - this.variables.wings.stripes.width - 10);
+			this.variables.wings.stripes.Y = random(this.variables.wings.Y + 10, this.variables.wings.Y + this.variables.wings.height - this.variables.wings.stripes.height - 10);
+		
+			this.variables.legs.width = random(3, 10);
+			this.variables.legs.height = random(10, this.variables.height / 4);
+			this.variables.legs.padding = (this.variables.width - this.variables.face - this.variables.back - 6 * this.variables.legs.width) / 6;
+		},
+		draw: function () {
+			console.debug('draw');
+			var i;
 
+			this.canvas.context.fillStyle = "#000";
+			this.canvas.context.fillRect(this.variables.X, this.variables.Y, this.variables.width, this.variables.height);
 
-context.fillStyle = "#000";
-context.fillRect(X, Y, width, height);
+			this.canvas.context.fillStyle = "#eee";
+			this.canvas.context.fillRect(this.variables.X + this.variables.width - this.variables.back, this.variables.Y, this.variables.back, this.variables.height);
 
-context.fillStyle = "#eee";
-context.fillRect(X + width - back, Y, back, height);
+			this.canvas.context.fillStyle = "#111";
+			this.canvas.context.fillRect(this.variables.X, this.variables.Y, this.variables.face, this.variables.height);
 
-context.fillStyle = "#111";
-context.fillRect(X, Y, face, height);
+			this.canvas.context.fillStyle = "yellow";
+			for (i = 0; i < this.variables.stripes.count; i += 2) {
+				this.canvas.context.fillRect(this.variables.X + this.variables.face + i * this.variables.stripes.width, this.variables.Y, this.variables.stripes.width, this.variables.height);
+			}
 
-context.fillStyle = "yellow";
-for (i = 0; i < stripesNum; i += 2) {
-	context.fillRect(X + face + i * stripesWidth, Y, stripesWidth, height);
-}
+			this.canvas.context.fillStyle = "blue";
+			this.canvas.context.fillRect(this.variables.X + this.variables.eyes.padding, this.variables.eyes.Y, this.variables.eyes.outerSize, this.variables.eyes.outerSize);
+			this.canvas.context.fillRect(this.variables.X + 2 * this.variables.eyes.padding + this.variables.eyes.outerSize, this.variables.eyes.Y, this.variables.eyes.outerSize, this.variables.eyes.outerSize);
 
-context.fillStyle = "blue";
-context.fillRect(X + eyePadding, eyeY, eyeOuterSize, eyeOuterSize);
-context.fillRect(X + 2 * eyePadding + eyeOuterSize, eyeY, eyeOuterSize, eyeOuterSize);
+			this.canvas.context.fillStyle = "#fff";
+			this.canvas.context.fillRect(this.variables.X + this.variables.eyes.padding + this.variables.eyes.outerSize / 4, this.variables.eyes.Y + this.variables.eyes.outerSize / 4, this.variables.eyes.innerSize, this.variables.eyes.innerSize);
+			this.canvas.context.fillRect(this.variables.X + 2 * this.variables.eyes.padding + this.variables.eyes.outerSize / 4 + this.variables.eyes.outerSize, this.variables.eyes.Y + this.variables.eyes.outerSize / 4, this.variables.eyes.innerSize, this.variables.eyes.innerSize);
 
-context.fillStyle = "#fff";
-context.fillRect(X + eyePadding + eyeOuterSize / 4, eyeY + eyeOuterSize / 4, eyeInnerSize, eyeInnerSize);
-context.fillRect(X + 2 * eyePadding + eyeOuterSize / 4 + eyeOuterSize, eyeY + eyeOuterSize / 4, eyeInnerSize, eyeInnerSize);
+			this.canvas.context.fillStyle = "#fff";
+			this.canvas.context.fillRect(this.variables.mouth.X, this.variables.mouth.Y, this.variables.mouth.width, this.variables.mouth.height);
 
-context.fillStyle = "#fff";
-context.fillRect(mouthX, mouthY, mouthWidth, mouthHeight);
+			this.canvas.context.fillStyle = "#fff";
+			this.canvas.context.fillRect(this.variables.wings.X, this.variables.wings.Y, this.variables.wings.width, this.variables.wings.height);
 
-context.fillStyle = "#fff";
-context.fillRect(wingX, wingY, wingWidth, wingHeight);
+			this.canvas.context.fillStyle = "lightblue";
+			this.canvas.context.fillRect(this.variables.wings.stripes.X, this.variables.wings.stripes.Y + this.variables.wings.stripes.height / 3, this.variables.wings.stripes.width, 3);
+			this.canvas.context.fillRect(this.variables.wings.stripes.X, this.variables.wings.stripes.Y + 2 * this.variables.wings.stripes.height / 3, this.variables.wings.stripes.width, 3);
+			this.canvas.context.fillRect(this.variables.wings.stripes.X + this.variables.wings.stripes.width / 3, this.variables.wings.stripes.Y, 3, this.variables.wings.stripes.height);
+			this.canvas.context.fillRect(this.variables.wings.stripes.X + 2 * this.variables.wings.stripes.width / 3, this.variables.wings.stripes.Y, 3, this.variables.wings.stripes.height);
 
-context.fillStyle = "lightblue";
-context.fillRect(wingStripesX, wingStripesY + wingStripesHeight / 3, wingStripesWidth, 3);
-context.fillRect(wingStripesX, wingStripesY + 2 * wingStripesHeight / 3, wingStripesWidth, 3);
-context.fillRect(wingStripesX + wingStripesWidth / 3, wingStripesY, 3, wingStripesHeight);
-context.fillRect(wingStripesX + 2 * wingStripesWidth / 3, wingStripesY, 3, wingStripesHeight);
-
-context.fillStyle = "#000";
-for (i = 1; i <= 6; ++i) {
-	context.fillRect(X + face + i * legsPadding, height + Y, legsWidth, legsHeight);
-}
+			this.canvas.context.fillStyle = "#000";
+			for (i = 1; i <= 6; ++i) {
+				this.canvas.context.fillRect(this.variables.X + this.variables.face + i * this.variables.legs.padding, this.variables.height + this.variables.Y, this.variables.legs.width, this.variables.legs.height);
+			}
+		}
+	}
+});

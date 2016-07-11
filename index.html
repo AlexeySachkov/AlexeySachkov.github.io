@@ -11,6 +11,8 @@
 
 		<!-- Custom css -->
 		<link rel="stylesheet" type="text/css" href="bumblebee.css" />
+
+		<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/vue/1.0.26/vue.min.js"></script>
 	</head>
 	<body>
 		<nav class="navbar navbar-default navbar-fixed-top" id="navbar-fixed-top">
@@ -24,10 +26,18 @@
 			</div>
 		</nav>
 		
-		<div class="container-fluid">
+		<div class="container-fluid" id="bumblebee-generator-app">
 			<div class="row">
-				<div class="col-md-10 col-md-offset-1" id="canvas-container">
-					<canvas id="canvas"></canvas>
+				<div class="col-lg-2">
+					<p>&nbsp;</p>
+					<p>
+						<button type='button' class='btn btn-primary btn-block' v-on:click.prevent='generate'>Redraw</button>
+					</p>
+				</div>
+				<div class="col-lg-10" id="canvas-container">
+					<div> <!-- special div without any margins, borders and paddings -->
+						<canvas id="canvas"></canvas>
+					</div>
 				</div>
 			</div>
 		</div>
