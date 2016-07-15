@@ -8,7 +8,7 @@ function gradToRad(grad) {
 	return grad * Math.PI / 180;
 }
 
-function _c(c) {
+function _d(c) {
 	if (c.length == 1) {
 		return c + c;
 	} else {
@@ -16,8 +16,21 @@ function _c(c) {
 	}
 }
 
+function _c(c) {
+	if (c.length == 1) {
+		var t = parseInt(random(0, 4)).toString(16);
+		return t + c;
+	} else {
+		return c;
+	}
+}
+
+function _color(r, g, b) {
+	return '#' + r + g + b;
+}
+
 function color(r, g, b) {
-	return "#" + _c(r.toString(16)) + _c(g.toString(16)) + _c(b.toString(16));
+	return "#" + _d(r.toString(16)) + _d(g.toString(16)) + _d(b.toString(16));
 }
 
 function randomColor() {
@@ -25,12 +38,12 @@ function randomColor() {
 }
 
 function randomRed() {
-	return color(parseInt(random(119, 255)), 0, 0); // 55 in hex
+	return color(parseInt(random(119, 255)), 0, 0); // 77 in hex
 }
 
 function randomBlack() {
-	var black = parseInt(random(0, 86)); // 55 in hex
-	return color(black, black, black);
+	var black = parseInt(random(0, 68)); // 44 in hex
+	return _color(_c(black), _c(black), _c(black));
 }
 
 console.debug('generator.js');
@@ -105,43 +118,51 @@ var vm = new Vue({
 			var mn = Math.min(this.canvas.width, this.canvas.height);
 			var mx = Math.max(this.canvas.width, this.canvas.height);
 
-			this.variables.body.size = random(mn * 0.3, mn * 0.8) / 2;
+			this.variables.body.size = random(mn * 0.3, mn * 0.6) / 2;
 			this.variables.body.square = parseInt(random(0, 2));
 			this.variables.body.color = randomRed();
 
-			this.variables.body.border.width = random(0, 0.2 * this.variables.body.size);
+			this.variables.body.border.width = random(1, 0.2 * this.variables.body.size);
 			this.variables.body.border.color = randomBlack();
 
 			this.variables.body.stripe.width = random(1, 0.1 * this.variables.body.size);
-			this.variables.body.stripe.color = randomBlack();
+			this.variables.body.stripe.color = this.variables.body.border.color;
 
-			this.variables.head.size = random(this.variables.body.size * 0.3, this.variables.body.size * 0.6);
+			this.variables.head.size = random(this.variables.body.size * 0.4, this.variables.body.size * 0.7);
 			this.variables.head.square = parseInt(random(0, 2));
 			this.variables.head.color = randomBlack();
 
 			this.variables.head.border.width = random(0, 0.2 * this.variables.head.size);
 			this.variables.head.border.color = randomBlack();
 
+			var totalHeight = this.variables.body.size * 2 + this.variables.head.size + this.variables.body.border.width + this.variables.head.border.width;
+
 			this.variables.X = this.canvas.width / 2;
-			this.variables.Y = this.canvas.height / 2;
+			this.variables.Y = this.canvas.height / 2 + (totalHeight / 2 - this.variables.body.size);
+			console.debug(totalHeight, this.canvas.height, this.variables.Y);
 
-			this.variables.body.X = this.variables.X - this.variables.body.size / 2;
-			this.variables.body.Y = this.variables.Y - this.variables.body.size / 4;
+			if (this.variables.body.square == 0) {
+				this.variables.body.X = this.variables.X - this.variables.body.size;
+				this.variables.body.Y = this.variables.Y - this.variables.body.size;
+			} else {
+				this.variables.body.X = this.variables.X;
+				this.variables.body.Y = this.variables.Y;
+			}
 
-			this.variables.head.X = this.variables.X - this.variables.head.size / 2;
-			this.variables.head.Y = this.variables.body.Y - this.variables.head.size / 2;
-
+			if (this.variables.head.square == 0) {
+				this.variables.head.X = this.variables.X - this.variables.head.size;
+				this.variables.head.Y = this.variables.Y - this.variables.body.size - this.variables.head.size;
+			} else {
+				this.variables.head.X = this.variables.X;
+				this.variables.head.Y = this.variables.Y - this.variables.body.size;
+			}
 		},
 		draw: function () {
 			var i;
 
 			if (this.variables.head.square == 0) {
 				this.canvas.context.beginPath();
-				if (this.variables.body.square == 0) {
-					this.canvas.context.rect(this.variables.head.X, this.variables.head.Y, this.variables.head.size, this.variables.head.size);
-				} else {
-					this.canvas.context.rect(this.variables.head.X, this.variables.Y - this.variables.body.size, this.variables.head.size, this.variables.head.size);	
-				}
+				this.canvas.context.rect(this.variables.head.X, this.variables.head.Y, this.variables.head.size * 2, this.variables.head.size * 2);
 				this.canvas.context.fillStyle = this.variables.head.color;
 				this.canvas.context.lineWidth = this.variables.head.border.width;
 				this.canvas.context.strokeStyle = this.variables.head.border.color;
@@ -149,11 +170,7 @@ var vm = new Vue({
 				this.canvas.context.stroke();
 			} else {
 				this.canvas.context.beginPath();
-				if (this.variables.body.square == 0) {
-					this.canvas.context.arc(this.variables.X, this.variables.body.Y, this.variables.head.size, 0, 2 * Math.PI, false);
-				} else {
-					this.canvas.context.arc(this.variables.X, this.variables.Y - 3 * this.variables.body.size / 4, this.variables.head.size, 0, 2 * Math.PI, false);
-				}
+				this.canvas.context.arc(this.variables.head.X, this.variables.head.Y, this.variables.head.size, 0, 2 * Math.PI, false);
 				this.canvas.context.fillStyle = this.variables.head.color;
 				this.canvas.context.fill();
 				this.canvas.context.lineWidth = this.variables.head.border.width;
@@ -163,7 +180,7 @@ var vm = new Vue({
 
 			if (this.variables.body.square == 0) {
 				this.canvas.context.beginPath();
-				this.canvas.context.rect(this.variables.body.X, this.variables.body.Y, this.variables.body.size, this.variables.body.size);
+				this.canvas.context.rect(this.variables.body.X, this.variables.body.Y, this.variables.body.size * 2, this.variables.body.size * 2);
 				this.canvas.context.fillStyle = this.variables.body.color;
 				this.canvas.context.lineWidth = this.variables.body.border.width;
 				this.canvas.context.strokeStyle = this.variables.body.border.color;
@@ -174,11 +191,11 @@ var vm = new Vue({
 				this.canvas.context.lineWidth = this.variables.body.stripe.width;
 				this.canvas.context.strokeStyle = this.variables.body.stripe.color;
 				this.canvas.context.moveTo(this.variables.X, this.variables.body.Y);
-				this.canvas.context.lineTo(this.variables.X, this.variables.body.Y + this.variables.body.size);
+				this.canvas.context.lineTo(this.variables.X, this.variables.body.Y + this.variables.body.size * 2);
 				this.canvas.context.stroke();
 			} else {
 				this.canvas.context.beginPath();
-				this.canvas.context.arc(this.variables.X, this.variables.Y + this.variables.body.size / 4, this.variables.body.size, 0, 2 * Math.PI, false);
+				this.canvas.context.arc(this.variables.body.X, this.variables.body.Y, this.variables.body.size, 0, 2 * Math.PI, false);
 				this.canvas.context.fillStyle = this.variables.body.color;
 				this.canvas.context.fill();
 				this.canvas.context.lineWidth = this.variables.body.border.width;
@@ -188,8 +205,8 @@ var vm = new Vue({
 				this.canvas.context.beginPath();
 				this.canvas.context.lineWidth = this.variables.body.stripe.width;
 				this.canvas.context.strokeStyle = this.variables.body.stripe.color;
-				this.canvas.context.moveTo(this.variables.X, this.variables.Y - 3 * this.variables.body.size / 4);
-				this.canvas.context.lineTo(this.variables.X, this.variables.Y + 5 * this.variables.body.size / 4);
+				this.canvas.context.moveTo(this.variables.body.X, this.variables.body.Y - this.variables.body.size);
+				this.canvas.context.lineTo(this.variables.body.X, this.variables.body.Y + this.variables.body.size);
 				this.canvas.context.stroke();
 			}
 
