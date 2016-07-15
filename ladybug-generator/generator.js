@@ -46,6 +46,10 @@ function randomBlack() {
 	return _color(_c(black), _c(black), _c(black));
 }
 
+function distance(x1, y1, x2, y2) {
+	return Math.sqrt( (x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1) );
+}
+
 console.debug('generator.js');
 var vm = new Vue({
 	el: '#ladybug-generator-app',
@@ -183,6 +187,52 @@ var vm = new Vue({
 			for (i = 0; i < this.variables.legs.data.length; ++i) {
 				this.variables.legs.data[i].angle += random(-7, 7);
 			}
+
+			var n = parseInt(random(10, this.variables.body.square != 0 ? 200 : 20));
+			this.variables.spots = [];
+
+			while (n > 0) {
+				var x, y, si, s, f;
+
+				si = random(0.05 * this.variables.body.size, 0.35 * this.variables.body.size);
+				s = parseInt(random(0, 2)) == 0;
+				if (this.variables.body.square == 0) {
+					x = random(si, this.variables.body.size - si);
+					y = random(si, 2 * this.variables.body.size - si);
+					f = true;
+				} else {
+					x = random(si, this.variables.body.size - si);
+					var t = Math.sqrt( this.variables.body.size * this.variables.body.size - x * x );
+					y = random(t, 2 * (this.variables.body.size - t) + t);
+
+					if (distance(x, y, this.variables.body.size, this.variables.body.size) >= this.variables.body.size + si) {
+						f = false;
+					} else {
+						f = true;
+					}
+				}
+
+				if (f) {
+					for (i = 0; i < this.variables.spots.length; ++i) {
+						if (s == this.variables.spots[i].side && distance(x, y, this.variables.spots[i].X, this.variables.spots[i].Y) <= si + this.variables.spots[i].size) {
+							f = false;
+							break;
+						}
+					}
+				}
+
+				if (f) {
+					this.variables.spots.push({
+						X: x,
+						Y: y,
+						size: si,
+						side: s,
+						color: randomBlack()
+					});
+				}
+
+				--n;
+			}
 		},
 		draw: function () {
 			var i;
@@ -224,6 +274,18 @@ var vm = new Vue({
 				this.canvas.context.fill();
 				this.canvas.context.stroke();
 
+				for (i = 0; i < this.variables.spots.length; ++i) {
+					this.canvas.context.beginPath();
+					this.canvas.context.fillStyle = this.variables.spots[i].color;
+					if (this.variables.spots[i].side == 0) {
+						this.canvas.context.arc(this.variables.spots[i].X + this.variables.body.X, this.variables.spots[i].Y + this.variables.body.Y, this.variables.spots[i].size, 0, 2 * Math.PI, false);
+					} else {
+						this.canvas.context.arc(this.variables.spots[i].X + this.variables.body.X + this.variables.body.size, this.variables.spots[i].Y + this.variables.body.Y, this.variables.spots[i].size, 0, 2 * Math.PI, false);
+					}
+
+					this.canvas.context.fill();
+				}
+
 				this.canvas.context.beginPath();
 				this.canvas.context.lineWidth = this.variables.body.stripe.width;
 				this.canvas.context.strokeStyle = this.variables.body.stripe.color;
@@ -238,6 +300,17 @@ var vm = new Vue({
 				this.canvas.context.lineWidth = this.variables.body.border.width;
 				this.canvas.context.strokeStyle = this.variables.body.border.color;
 				this.canvas.context.stroke();
+
+				for (i = 0; i < this.variables.spots.length; ++i) {
+					this.canvas.context.beginPath();
+					this.canvas.context.fillStyle = this.variables.spots[i].color;
+					if (this.variables.spots[i].side == 0) {
+						this.canvas.context.arc(this.variables.spots[i].X + this.variables.body.X - this.variables.body.size, this.variables.spots[i].Y + this.variables.body.Y - this.variables.body.size, this.variables.spots[i].size, 0, 2 * Math.PI, false);
+					} else {
+						this.canvas.context.arc(this.variables.spots[i].X + this.variables.body.X, this.variables.spots[i].Y + this.variables.body.Y - this.variables.body.size, this.variables.spots[i].size, 0, 2 * Math.PI, false);
+					}
+					this.canvas.context.fill();
+				}
 
 				this.canvas.context.beginPath();
 				this.canvas.context.lineWidth = this.variables.body.stripe.width;
