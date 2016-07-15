@@ -163,8 +163,9 @@ var vm = new Vue({
 				this.variables.head.Y = this.variables.Y - this.variables.body.size;
 			}
 
-			var l = random(1, 0.35 * this.variables.body.size) + this.variables.body.size + this.variables.body.border.width;
-			var ll = random(1, 0.35 * this.variables.body.size) + this.variables.body.size * 1.4 + this.variables.body.border.width;
+			var k = random(0.2 * this.variables.body.size, 0.35 * this.variables.body.size);
+			var l = k + this.variables.body.size + this.variables.body.border.width;
+			var ll = k + this.variables.body.size * 1.4 + this.variables.body.border.width;
 			this.variables.legs.width = random(1, 0.2 * this.variables.body.size);
 			this.variables.legs.color = randomBlack();	
 			this.variables.legs.X = this.variables.X;
