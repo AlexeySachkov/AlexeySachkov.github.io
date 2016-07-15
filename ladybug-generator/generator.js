@@ -79,6 +79,13 @@ var vm = new Vue({
 				X: 0,
 				Y: 0
 			},
+			legs: {
+				width: 0,
+				color: '',
+				X: 0,
+				Y: 0,
+				data: [] // { angle, len }
+			},
 			spots: [] // { X, Y, size, color }
 		},
 		canvas: {
@@ -139,7 +146,6 @@ var vm = new Vue({
 
 			this.variables.X = this.canvas.width / 2;
 			this.variables.Y = this.canvas.height / 2 + (totalHeight / 2 - this.variables.body.size);
-			console.debug(totalHeight, this.canvas.height, this.variables.Y);
 
 			if (this.variables.body.square == 0) {
 				this.variables.body.X = this.variables.X - this.variables.body.size;
@@ -156,9 +162,39 @@ var vm = new Vue({
 				this.variables.head.X = this.variables.X;
 				this.variables.head.Y = this.variables.Y - this.variables.body.size;
 			}
+
+			var l = random(1, 0.35 * this.variables.body.size) + this.variables.body.size + this.variables.body.border.width;
+			var ll = random(1, 0.35 * this.variables.body.size) + this.variables.body.size * 1.4 + this.variables.body.border.width;
+			this.variables.legs.width = random(1, 0.2 * this.variables.body.size);
+			this.variables.legs.color = randomBlack();	
+			this.variables.legs.X = this.variables.X;
+			this.variables.legs.Y = this.variables.Y;
+			this.variables.legs.data = [];
+
+			this.variables.legs.data.push({ angle: 0, len: l });
+			this.variables.legs.data.push({ angle: -40, len: this.variables.body.square != 0 ? l : ll });
+			this.variables.legs.data.push({ angle: 40, len: this.variables.body.square != 0 ? l : ll });
+			this.variables.legs.data.push({ angle: 140, len: this.variables.body.square != 0 ? l : ll });
+			this.variables.legs.data.push({ angle: 180, len: l });
+			this.variables.legs.data.push({ angle: 220, len: this.variables.body.square != 0 ? l : ll });
+
+			var i;
+			for (i = 0; i < this.variables.legs.data.length; ++i) {
+				this.variables.legs.data[i].angle += random(-7, 7);
+			}
 		},
 		draw: function () {
 			var i;
+
+			this.canvas.context.beginPath();
+			this.canvas.context.lineWidth = this.variables.legs.width;
+			this.canvas.context.strokeStyle = this.variables.legs.color;
+			var i;
+			for (i = 0; i < this.variables.legs.data.length; ++i) {
+				this.canvas.context.moveTo(this.variables.legs.X, this.variables.legs.Y);
+				this.canvas.context.lineTo(this.variables.legs.X + this.variables.legs.data[i].len * Math.cos(gradToRad(this.variables.legs.data[i].angle)), this.variables.legs.Y + this.variables.legs.data[i].len * Math.sin(gradToRad(this.variables.legs.data[i].angle)));
+			}
+			this.canvas.context.stroke();
 
 			if (this.variables.head.square == 0) {
 				this.canvas.context.beginPath();
