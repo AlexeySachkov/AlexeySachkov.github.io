@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>CG lab #1</title>
+
+	<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
+	<link rel="stylesheet" type="text/css" href="css/bootstrap-theme.min.css" />
+	<link rel="stylesheet" type="text/css" href="css/style.css" />
+</head>
+<body>
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-md-9" id="left">
+				<canvas id="canvas"></canvas>
+			</div>
+			<div class="col-md-3" id="right">
+				<form>
+					<div class="form-group">
+						<h3>Настройки</h3>
+					</div>
+					<div class='form-group'>
+						<span class="help-block" id='help_block_span'></span>
+					</div>
+					
+					<div class="form-group">
+						<label>Основа: </label>
+						<select id='base_type_selectbox' class='form-control'>
+							<option value='segment'>Отрезок</option>
+							<option value='2segment'>Отрезок с обратным</option>
+							<option value='triangle'>Треугольник</option>
+							<option value='square'>Квадрат</option>
+							<option value='5poly'>Пятиугольник</option>
+							<option value='6poly'>Шестиугольник</option>
+						</select>
+					</div>
+					<div class='form-group text-right'>
+						<button type='button' class='btn btn-primary' id='generate'>Сгенерировать</button>
+					</div>
+					<div class="form-group">
+						<textarea class='form-control' rows='3' placeholder="Начальные данные" id='source_data_input'></textarea>
+					</div>
+					<div class="form-group">
+						<label>Шаблон: </label>
+						<select id='template_type_selectbox' class='form-control'>
+							<option value='t1'>Линия Коха</option>
+							<option value='t2'>Линия 2</option>
+							<option value='t3'>Линия 3</option>
+							<option value='t4'>Линия 4</option>
+							<option value='t5'>Линия 5</option>
+							<option value='t6'>Линия 6</option>
+							<option value='t7'>Линия 7</option>
+							<option value='t8'>Линия 8</option>
+							<option value='t9'>Линия 9 (todo)</option>
+							<option value='t10'>Линия 10 (todo)</option>
+							<option value='t11'>Линия 11</option>
+							<option value='t12'>Линия 12 (todo)</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="iterations_count_input">Число итераций: </label>
+						<input type='number' min='0' max='20' step='1' class='form-control' value='3' id='iterations_count_input' />
+					</div>
+					<div class="form-group">
+						<div class='checkbox'>
+							<label>
+								<input type='checkbox' id='vertical_invert_checkbox' /> Инвертировать шаблон вдоль оси y
+							</label>
+						</div>
+					</div>
+					<div class="form-group">
+						<label>Инвертировать шаблон в зависимости от номера итерации: </label>
+						<select id='vertical_invert_by_iteration_selecbox' class='form-control'>
+							<option value='0' selected>Нет</option>
+							<option value='1'>На нечётных итерациях</option>
+							<option value='2'>На чётных итерациях</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label>Инвертировать шаблон в зависимости от номера сегмента: </label>
+						<select id='vertical_invert_by_segment_selecbox' class='form-control'>
+							<option value='0' selected>Нет</option>
+							<option value='1'>На нечётных номерах</option>
+							<option value='2'>На чётных номерах</option>
+						</select>
+					</div>
+					<div class='form-group text-right'>
+						<button type='button' class='btn btn-primary' id='redraw'>Применить</button>
+					</div>
+					<div class="form-group">
+						<label>Результирующие данные: </label>
+						<textarea class='form-control' rows='7' placeholder="Результирующие данные" id='result_data_input'></textarea>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<script type="text/javascript" src="js/jquery-2.2.4.min.js"></script>
+	<script type="text/javascript" src="js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="js/gl-matrix-min.js"></script>
+	<script type="text/javascript" src="js/app.js"></script>
+</body>
+</html>
