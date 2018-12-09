@@ -191,32 +191,20 @@ for handle in handles:
                     file.write('</ul>')
 
             file.write('</div><div class="card-footer">')
-            total_done = num_in_time + num_late
-            not_done = len(homework['problems']) - total_done
-            score = 5 - not_done
-            file.write('Всего решено задач: {}, вовремя: {}. Оценка: {}'.format(total_done, num_in_time, score))
-            file.write('</div></div><br />')
+            score = num_in_time + num_late * 0.75
+            percent = int(score / len(homework['problems']) * 100)
+            if percent <= 25:
+                final_score = 2
+            elif percent <= 50:
+                final_score = 3
+            elif percent <= 75:
+                final_score = 4
+            else:
+                final_score = 5
 
-        #for problem, submissions in per_problem.items():
-        #    title = submissions[0]['problem']['name']
-        #    file.write('<h3>{}. {}</h3>'.format(problem, title))
-        #    file.write('<ul>')
-        #    for submission in submissions:
-        #        file.write('<li>{} - {}</li>'.format(problem, submission['verdict']))
-        #    file.write('</ul>')
+            file.write('Всего решено задач: {}, вовремя: {}. Оценка: {}'.format(num_in_time + num_late, num_in_time, final_score))
+            file.write('</div></div><br />')
 
         file.write('</div></div></div>')
         file.write(FOOTER)
         time.sleep(5)
-
-
-
-
-
-
-
-
-
-
-
-
