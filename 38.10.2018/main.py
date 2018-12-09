@@ -67,6 +67,9 @@ HEADER = '<!DOCTYPE html><html>' \
          '<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>' \
          '<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>' \
          '<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>' \
+         '<style type="text/css">' \
+         'body { padding-top: 50px; }' \
+         '</style>' \
          '</head><body>'
 
 FOOTER = '<div class="container"><div class="row"><div class="col-md-12"><hr />' \
@@ -80,16 +83,18 @@ FOOTER = '<div class="container"><div class="row"><div class="col-md-12"><hr />'
 with codecs.open('reports/index.html', 'w', "utf-8") as file:
     file.write(HEADER)
     file.write('<div class="container"><div class="row"><div class="col-md-12">')
-    file.write('<h1 class="page-header">Отчёт о решении задач на codeforces</h1>')
-
+    file.write('<h1>Отчёт о решении задач на codeforces</h1><hr />')
     file.write('<h2>Домашние задания</h2>')
+    file.write('<div class="card-group">')
     index = 0
     for homework in homeworks:
         index = index + 1
-        file.write('<h3>Домашняя работа №{}</h3>'.format(index))
-        file.write('<p>Задана: {}<br />'.format(homework['from'].strftime("%d.%m.%Y")))
-        file.write('Сдать до: {}'.format(homework['to'].strftime("%d.%m.%Y")))
-        file.write('<p>Список задач: ')
+        file.write('<div class="card"><div class="card-header">')
+        file.write('Домашняя работа №{}</div>'.format(index))
+        file.write('<ul class="list-group list-group-flush">')
+        file.write('<li class="list-group-item">Задана: {}</li>'.format(homework['from'].strftime("%d.%m.%Y")))
+        file.write('<li class="list-group-item">Сдать до: {}</li>'.format(homework['to'].strftime("%d.%m.%Y")))
+        file.write('<li class="list-group-item">Список задач: ')
 
         total = len(homework['problems'])
         current = 0
@@ -102,7 +107,9 @@ with codecs.open('reports/index.html', 'w', "utf-8") as file:
                 file.write('<a href="https://codeforces.com/contest/{}/problem/{}" target="_blank">{}</a>'.format(matches[1], matches[2], problem))
             if current != total:
                 file.write(', ')
+        file.write('</li></ul></div>')
 
+    file.write("</div>")
     file.write('<h2>Список индивидуальных отчётов</h2>')
     file.write('<ul>')
     for handle in handles:
@@ -121,7 +128,7 @@ for handle in handles:
     with codecs.open('reports/{}.html'.format(handle), 'w', "utf-8") as file:
         file.write(HEADER)
         file.write('<div class="container"><div class="row"><div class="col-md-12">')
-        file.write('<h2 class="page-header">Отчёт о выполнении домашнего задания <a href="https://codeforces.com/prfile/{}">{}</a></h2>'.format(handle, handle))
+        file.write('<h2 class="page-header">Отчёт о выполнении домашнего задания <a href="https://codeforces.com/prfile/{}">{}</a></h2><hr />'.format(handle, handle))
         response = json.loads(content)
 
         if response['status'] != 'OK':
