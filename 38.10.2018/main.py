@@ -41,6 +41,21 @@ homeworks = [
         'from': datetime.date(2018, 9, 24),
         'to': datetime.date(2018, 10, 14),
         'problems': ['4A', '116A', '231A', '467A']
+    },
+    {
+        'from': datetime.date(2018, 10, 15),
+        'to': datetime.date(2018, 11, 11),
+        'problems': ['469A', '155A', '677A', '509A']
+    },
+    {
+        'from': datetime.date(2018, 11, 19),
+        'to': datetime.date(2018, 12, 9),
+        'problems': ['460A', '379A', '705A', '492A']
+    },
+    {
+        'from': datetime.date(2018, 12, 3),
+        'to': datetime.date(2018, 12, 24),
+        'problems': ['71A', '112A']
     }
 ]
 
@@ -65,7 +80,7 @@ for handle in handles:
     with codecs.open('reports/{}.html'.format(handle), 'w', "utf-8") as file:
         file.write(HEADER)
         file.write('<div class="container"><div class="row"><div class="col-md-12">')
-        file.write('<h2 class="page-header">Submissions from {}</h2>'.format(handle))
+        file.write('<h2 class="page-header">Отчёт о выполнении домашнего задания <a href="https://codeforces.com/prfile/{}">{}</a></h2>'.format(handle, handle))
         response = json.loads(content)
 
         if response['status'] != 'OK':
@@ -89,9 +104,9 @@ for handle in handles:
             file.write('<p>Задана: {}<br />'.format(homework['from'].strftime("%d.%m.%Y")))
             file.write('Сдать до: {}'.format(homework['to'].strftime("%d.%m.%Y")))
             for problem in homework['problems']:
-                file.write('<p class="lead"><em>{}</em>'.format(problem))
+                file.write('<p class="lead"><strong>{}</strong>'.format(problem))
                 if problem not in per_problem:
-                    file.write('<p class="text-danger"><em>Не было сделано ни одной попытки!</em>')
+                    file.write('<p class="text-danger"><strong>Не было сделано ни одной попытки!</strong>')
                 else:
                     got_ac = False
                     for submission in per_problem[problem]:
@@ -100,9 +115,9 @@ for handle in handles:
                             break
                     file.write('<p>Было сделано попыток: {}. '.format(len(per_problem[problem])))
                     if got_ac:
-                        file.write('<em class="text-success">Задача сдана</em>')
+                        file.write('<strong class="text-success">Задача сдана</strong>')
                     else:
-                        file.write('<em class="text-warning">Задача не сдана</em>')
+                        file.write('<strong class="text-warning">Задача не сдана</strong>')
                     file.write('<p><a data-toggle="collapse" href="#{}-{}">Показать все попытки</>'.format(handle, problem))
                     file.write('<ul class="collapse" id="{}-{}">'.format(handle, problem))
                     for submission in per_problem[problem]:
