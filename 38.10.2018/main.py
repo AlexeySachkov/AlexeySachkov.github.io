@@ -138,6 +138,7 @@ for handle in handles:
             continue
 
         per_problem = {}
+        included_in_homework = set()
 
         data = response['result']
         for submission in data:
@@ -162,6 +163,7 @@ for handle in handles:
             num_in_time = 0
             num_late = 0
             for problem in homework['problems']:
+                included_in_homework.add(problem)
                 file.write('<h5 class="card-title">{}</h5>'.format(problem))
                 if problem not in per_problem:
                     file.write('<p class="text-danger"><strong>Не было сделано ни одной попытки!</strong>')
@@ -175,7 +177,7 @@ for handle in handles:
                                 in_time = True
                                 break
 
-                    file.write('<p>Было сделано попыток: {}. '.format(len(per_problem[problem])))
+                    file.write('Было сделано попыток: {}. '.format(len(per_problem[problem])))
                     if got_ac and in_time:
                         num_in_time = num_in_time + 1
                         file.write('<strong class="text-success">Задача сдана вовремя</strong>')
@@ -204,6 +206,35 @@ for handle in handles:
 
             file.write('Всего решено задач: {}, вовремя: {}. Оценка: {}'.format(num_in_time + num_late, num_in_time, final_score))
             file.write('</div></div><br />')
+
+        file.write('<div class="card">')
+        file.write('<div class="card-header">Дополнительнo решённые задачи</div>')
+        file.write('<div class="card-body">')
+        count = 0
+        for problem, submissions in per_problem.items():
+            if problem in included_in_homework:
+                continue
+            count = count + 1
+            file.write('<h5 class="card-title">{}</h5>'.format(problem))
+            got_ac = False
+            for submission in submissions:
+                if submission['verdict'] == 'OK':
+                    got_ac = True
+            if got_ac:
+                file.write('<strong class="text-success">Задача была сдана</strong>')
+            else:
+                file.write('<strong class="text-warning">Задача не была сдана</strong>')
+            file.write('<p><a data-toggle="collapse" href="#{}-{}">Показать все попытки</>'.format(handle, problem))
+            file.write('<ul class="collapse" id="{}-{}">'.format(handle, problem))
+            for submission in submissions:
+                file.write('<li><a href="https://codeforces.com/contest/{}/submission/{}">{}</a> - {}</li>'.format(submission['problem']['contestId'], submission['id'], submission['id'], submission['verdict']))
+            file.write('</ul>')
+
+        if count == 0:
+            file.write('<p>Ни одной попытки по другим задачам сделано не было')
+
+        file.write('</div></div>')
+
 
         file.write('</div></div></div>')
         file.write(FOOTER)
