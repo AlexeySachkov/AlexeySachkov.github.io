@@ -159,6 +159,8 @@ for handle in handles:
 
             end_timestamp = next_date_timestamp(homework['to'])
 
+            num_in_time = 0
+            num_late = 0
             for problem in homework['problems']:
                 file.write('<h5 class="card-title">{}</h5>'.format(problem))
                 if problem not in per_problem:
@@ -175,8 +177,10 @@ for handle in handles:
 
                     file.write('<p>Было сделано попыток: {}. '.format(len(per_problem[problem])))
                     if got_ac and in_time:
+                        num_in_time = num_in_time + 1
                         file.write('<strong class="text-success">Задача сдана вовремя</strong>')
                     elif got_ac:
+                        num_late = num_late + 1
                         file.write('<strong class="text-warning">Задача не была сдана вовремя, однако был сдана позже</strong>')
                     else:
                         file.write('<strong class="text-danger">Задача не была сдана</strong>')
@@ -185,6 +189,12 @@ for handle in handles:
                     for submission in per_problem[problem]:
                         file.write('<li><a href="https://codeforces.com/contest/{}/submission/{}">{}</a> - {}</li>'.format(submission['problem']['contestId'], submission['id'], submission['id'], submission['verdict']))
                     file.write('</ul>')
+
+            file.write('</div><div class="card-footer">')
+            total_done = num_in_time + num_late
+            not_done = len(homework['problems']) - total_done
+            score = 5 - not_done
+            file.write('Всего решено задач: {}, вовремя: {}. Оценка: {}'.format(total_done, num_in_time, score))
             file.write('</div></div><br />')
 
         #for problem, submissions in per_problem.items():
