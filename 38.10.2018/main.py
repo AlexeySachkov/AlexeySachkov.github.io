@@ -1,6 +1,7 @@
 import urllib.request
 import json
 import datetime
+import codecs
 import time
 
 handles = [
@@ -43,6 +44,17 @@ homeworks = [
     }
 ]
 
+HEADER = '<!DOCTYPE html><html>' \
+         '<head><title>Отчёт о решении задач на codeforces</title>' \
+         '<meta charset="UTF-8" />' \
+         '<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">' \
+         '<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>' \
+         '<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>' \
+         '<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>' \
+        '</head><body>'
+
+FOOTER = '</body></html>'
+
 BASE_URL = 'http://codeforces.com/api/user.status'
 
 for handle in handles:
@@ -50,11 +62,8 @@ for handle in handles:
     print(url)
     content = urllib.request.urlopen(url).read()
 
-    with open('reports/{}.html'.format(handle), 'w') as file:
-        file.write('<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">')
-        file.write('<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>')
-        file.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>')
-        file.write('<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>')
+    with codecs.open('reports/{}.html'.format(handle), 'w', "utf-8") as file:
+        file.write(HEADER)
         file.write('<div class="container"><div class="row"><div class="col-md-12">')
         file.write('<h2 class="page-header">Submissions from {}</h2>'.format(handle))
         response = json.loads(content)
@@ -109,6 +118,7 @@ for handle in handles:
         #    file.write('</ul>')
 
         file.write('</div></div></div>')
+        file.write(FOOTER)
         time.sleep(5)
 
 
