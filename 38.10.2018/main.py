@@ -33,8 +33,10 @@ handles = [
 ]
 
 
-def timestamp(date):
-    return datetime.time.mktime(datetime.datetime.strptime(date, "%d/%m/%Y").timetuple())
+def next_date_timestamp(date):
+    current = datetime.datetime.strptime(date.strftime("%d/%m/%Y"), "%d/%m/%Y")
+    next = current + datetime.timedelta(days=1)
+    return time.mktime(next.timetuple())
 
 
 homeworks = [
@@ -148,29 +150,42 @@ for handle in handles:
         index = 0
         for homework in homeworks:
             index = index + 1
-            file.write('<h3>Домашняя работа №{}</h3>'.format(index))
-            file.write('<p>Задана: {}<br />'.format(homework['from'].strftime("%d.%m.%Y")))
-            file.write('Сдать до: {}'.format(homework['to'].strftime("%d.%m.%Y")))
+            file.write('<div class="card">')
+            file.write('<div class="card-header">Домашняя работа №{}</div>'.format(index))
+            file.write('<ul class="list-group list-group-flush">')
+            file.write('<li class="list-group-item">Задана: {}</li>'.format(homework['from'].strftime("%d.%m.%Y")))
+            file.write('<li class="list-group-item">Сдать до: {}</li>'.format(homework['to'].strftime("%d.%m.%Y")))
+            file.write('</ul><div class="card-body">')
+
+            end_timestamp = next_date_timestamp(homework['to'])
+
             for problem in homework['problems']:
-                file.write('<p class="lead"><strong>{}</strong>'.format(problem))
+                file.write('<h5 class="card-title">{}</h5>'.format(problem))
                 if problem not in per_problem:
                     file.write('<p class="text-danger"><strong>Не было сделано ни одной попытки!</strong>')
                 else:
                     got_ac = False
+                    in_time = False
                     for submission in per_problem[problem]:
                         if submission['verdict'] == 'OK':
                             got_ac = True
-                            break
+                            if submission['creationTimeSeconds'] < end_timestamp:
+                                in_time = True
+                                break
+
                     file.write('<p>Было сделано попыток: {}. '.format(len(per_problem[problem])))
-                    if got_ac:
-                        file.write('<strong class="text-success">Задача сдана</strong>')
+                    if got_ac and in_time:
+                        file.write('<strong class="text-success">Задача сдана вовремя</strong>')
+                    elif got_ac:
+                        file.write('<strong class="text-warning">Задача не была сдана вовремя, однако был сдана позже</strong>')
                     else:
-                        file.write('<strong class="text-warning">Задача не сдана</strong>')
+                        file.write('<strong class="text-danger">Задача не была сдана</strong>')
                     file.write('<p><a data-toggle="collapse" href="#{}-{}">Показать все попытки</>'.format(handle, problem))
                     file.write('<ul class="collapse" id="{}-{}">'.format(handle, problem))
                     for submission in per_problem[problem]:
                         file.write('<li><a href="https://codeforces.com/contest/{}/submission/{}">{}</a> - {}</li>'.format(submission['problem']['contestId'], submission['id'], submission['id'], submission['verdict']))
                     file.write('</ul>')
+            file.write('</div></div><br />')
 
         #for problem, submissions in per_problem.items():
         #    title = submissions[0]['problem']['name']
