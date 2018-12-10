@@ -29,7 +29,8 @@ handles = [
     'Ar1shka',
     'akon1te',
     'Sudarikov',
-    'leyyyn'
+    'leyyyn',
+    'Hac_ker.sashko'
 ]
 
 
