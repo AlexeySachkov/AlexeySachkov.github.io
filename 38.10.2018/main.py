@@ -30,7 +30,9 @@ handles = [
     'akon1te',
     'Sudarikov',
     'leyyyn',
-    'Hac_ker.sashko'
+    'Hac_ker.sashko',
+    'Senchatay',
+    'Gleb_Yasakov'
 ]
 
 
@@ -121,10 +123,15 @@ with codecs.open('reports/index.html', 'w', "utf-8") as file:
     for handle in handles:
         file.write('<li><a href="https://alexeysachkov.github.io/38.10.2018/reports/{}.html">{}</a></li>'.format(handle, handle))
     file.write('</ul>')
+    file.write('<h2>Итоговые оценки</h2>')
+    file.write('<p><a href=2018.final.html>1 семестр</a>')
     file.write('</div></div></div>')
     file.write(FOOTER)
 
+
 BASE_URL = 'http://codeforces.com/api/user.status'
+
+homework_scores = {}
 
 for handle in handles:
     url = BASE_URL + '?lang=ru&handle={}&from=1&count=1000'.format(handle)
@@ -153,6 +160,7 @@ for handle in handles:
                 per_problem[problem].append(submission)
 
         index = 0
+        homework_scores[handle] = {}
         for homework in homeworks:
             index = index + 1
             file.write('<div class="card">')
@@ -197,6 +205,10 @@ for handle in handles:
                     file.write('</ul>')
 
             file.write('</div><div class="card-footer">')
+            file.write('<p><strong>Система оценок:</strong> 1 балл за задачу, которая была сдана вовремя; 0.75 за дорешаную позже задачу')
+            file.write('<p>Оценка выставляется исходя из процентного соотношения количества полученных балов к максимально возможному количеству баллов')
+            file.write('<p><=25% - 2; <=50% - 3; <= 75% - 4; > 75% - 5')
+            file.write('</div><div class="card-footer">')
             score = num_in_time + num_late * 0.75
             percent = int(score / len(homework['problems']) * 100)
             if percent <= 25:
@@ -207,8 +219,8 @@ for handle in handles:
                 final_score = 4
             else:
                 final_score = 5
-
-            file.write('Всего решено задач: {}, вовремя: {}. Оценка: {}'.format(num_in_time + num_late, num_in_time, final_score))
+            homework_scores[handle][index] = final_score
+            file.write('<p>Всего решено задач: {}, вовремя: {}, дорешано: {}. Оценка: {} ({}/{} - {}%)'.format(num_in_time + num_late, num_in_time, num_late, final_score, score, len(homework['problems']), percent))
             file.write('</div></div><br />')
 
         file.write('<div class="card">')
@@ -243,3 +255,176 @@ for handle in handles:
         file.write('</div></div></div>')
         file.write(FOOTER)
         time.sleep(5)
+
+# Generate finals page
+
+additional = {
+    'Natasha_andr': {
+        'test': 3,
+        'b': [2, 0, 0]
+    },
+    'imyanark': {
+        'test': 0,
+        'b': [-1, 0, 0]
+    },
+    'andrushabausov': {
+        'test': 5,
+        'b': [0, 0, 0]
+    },
+    'MayeTusks': {
+        'test': 4,
+        'b': [7, 0, 0]
+    },
+    'matveykos': {
+        'test': 4,
+        'b': [-1, 0, 0]
+    },
+    'artenator2': {
+        'test': 3,
+        'b': [2, 0, 0]
+    },
+    'Diana.kuptsova6062003': {
+        'test': 3,
+        'b': [3, 0, 0]
+    },
+    'VladimirLevin2002': {
+        'test': 3,
+        'b': [3, 0, 0]
+    },
+    'Ulia2911': {
+        'test': 3,
+        'b': [0, 0, 0]
+    },
+    'Wolf_from_Cintra': {
+        'test': 0,
+        'b': [0, 0, 0]
+    },
+    'olga_shakh': {
+        'test': 0,
+        'b': [1, 0, 0]
+    },
+    '3.x.310': {
+        'test': 2,
+        'b': [-2, 0, 0]
+    },
+    'kristina_': {
+        'test': 4,
+        'b': [-1, 0, 0]
+    },
+    'PRofe': {
+        'test': 0,
+        'b': [4, 0, 0]
+    },
+    'systemnickname': {
+        'test': 3,
+        'b': [1, 0, 0]
+    },
+    'VialovaA': {
+        'test': 5,
+        'b': [7, 0, 0]
+    },
+    'DanissimoKuw': {
+        'test': 4,
+        'b': [3, 0, 0]
+    },
+    'Dmitry_Ddv': {
+        'test': 4,
+        'b': [1, 0, 0]
+    },
+    'isashaaaa': {
+        'test': 3,
+        'b': [4, 0, 0]
+    },
+    'Mihail.M.K': {
+        'test': 3,
+        'b': [1, 0, 0]
+    },
+    'Ar1shka': {
+        'test': 3,
+        'b': [2, 0, 0]
+    },
+    'akon1te': {
+        'test': 3,
+        'b': [4, 0, 0]
+    },
+    'Sudarikov': {
+        'test': 4,
+        'b': [2, 0, 0]
+    },
+    'leyyyn': {
+        'test': 0,
+        'b': [0, 0, 0]
+    },
+    'Hac_ker.sashko': {
+        'test': 4,
+        'b': [-1, 0, 0]
+    },
+    'Senchatay': {
+        'test': 3,
+        'b': [2, 0, 0]
+    },
+    'Gleb_Yasakov': {
+        'test': 4,
+        'b': [4, 0, 0]
+    }
+}
+
+with codecs.open('reports/2018.final.html', 'w', "utf-8") as file:
+    file.write(HEADER)
+    file.write('<div class="container"><div class="row"><div class="col-md-12">')
+    file.write('<h1>Отчёт о решении задач на codeforces</h1><hr />')
+    file.write('<h2>Итоговые оценки за 1 семестр</h2>')
+    file.write('<table class="table table-bordered table-hover">')
+    file.write('<thead><tr><th>Handle</th><th>HW#1</th><th>HW#2</th><th>HW#3</th><th>HW#4</th>')
+    file.write('<th>Test</th>')
+    file.write('<th>B#1</th>')
+    #file.write('<th>B#2</th>')
+    #file.write('<th>B#3</th>')
+    file.write('<th>Sum</th>')
+    file.write('<th>PrS</th>')
+    file.write('</tr></thead>')
+    file.write('<tbody>')
+    for handle in handles:
+        file.write('<tr><td>{}</td>'.format(handle))
+        sum = 0
+        for index in range(1, len(homeworks)+1):
+            file.write('<td>{}</td>'.format(homework_scores[handle][index]))
+            sum = sum + homework_scores[handle][index]
+        test = additional[handle]['test']
+        sum = sum + test
+        test = '-' if test == 0 else test
+        b = additional[handle]['b']
+        file.write('<td>{}</td><td>{}</td><!--<td>{}</td><td>{}</td>-->'.format(test, b[0], b[1], b[2]))
+        sum = sum + b[0] + b[1] + b[2]
+        file.write('<td>{}</td>'.format(sum))
+        if sum >= 25:
+            final_score = 5
+        elif sum >= 20:
+            final_score = 4
+        elif sum >= 15:
+            final_score = 3
+        else:
+            final_score = 2
+        file.write('<td>{}</td>'.format(final_score))
+        file.write('</tr>')
+
+    file.write('</tbody></table>')
+    file.write('<p><strong>Легенда</strong>')
+    file.write('<p> HW#X - Оценка за домашнюю работу №X')
+    file.write('<p> Test - Оценка за тест 19.11.2018')
+    file.write('<p> B#1 - Дополнительные баллы за ответы на лекциях и работу на практике. Может быть отрицательным числом')
+    file.write('<p> Sum - Cумма полученных баллов')
+    file.write('<p> PrS - Предварительная оценка. Способ подсчёта:')
+    file.write('<ul>')
+    file.write('<li>Минимальное количество баллов на 5: 25</li>')
+    file.write('<li>Минимальное количество баллов на 4: 20</li>')
+    file.write('<li>Минимальное количество баллов на 3: 15</li>')
+    file.write('</ul>')
+    file.write('<p><strong>Важно!</strong> Данная система оценивания предварительная, минимальное количество баллов для получения той или иной оценки может быть изменено. Любая оценка может быть оспорена. Для подтверждения потребуется сдать одну или несколько задач на codeforces и ответить на несколько вопросов.')
+    file.write('<p><strong>Важно!</strong> Некоторые сдали все домашние работы, но полностью их скопировали у других - я добавлю дополнительную колонку, которая будет показывать штрафы за копирование чужих решений')
+    file.write('<p><strong>Важно!</strong> На последних занятиях по практике я часто давал индивидуальные задания на codeforces - будет добавлена отдельная колонка с оценкой выполнения этих индивидуальных заданий')
+    file.write('<p>Выполнение домашних заданий приносит баллы, даже если сроки сдачи уже прошли, однако помните про штрафы за копирование чужих работ!')
+    file.write('<p>Если вы переживаете за свою оценку и заинтересованы в её повышении - напишите мне на почту (sachkov2011 at gmail dot com) для получения индивидуального задания')
+    file.write('<p>Список возможных вопросов будет опубликован на этом сайте позже, с примерами ответов')
+    file.write('</div></div></div>')
+    file.write(FOOTER)
