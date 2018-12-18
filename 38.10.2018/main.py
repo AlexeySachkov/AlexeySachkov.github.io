@@ -4,6 +4,8 @@ import datetime
 import codecs
 import time
 import re
+import pyquery
+import hashlib
 
 handles = [
     'Natasha_andr',
@@ -133,6 +135,10 @@ BASE_URL = 'http://codeforces.com/api/user.status'
 
 homework_scores = {}
 
+too_fast_submissions = {}
+
+all_one_shot_submissions = []
+
 for handle in handles:
     url = BASE_URL + '?lang=ru&handle={}&from=1&count=1000'.format(handle)
     print(url)
@@ -141,7 +147,7 @@ for handle in handles:
     with codecs.open('reports/{}.html'.format(handle), 'w', "utf-8") as file:
         file.write(HEADER)
         file.write('<div class="container"><div class="row"><div class="col-md-12">')
-        file.write('<h2 class="page-header">Отчёт о выполнении домашнего задания <a href="https://codeforces.com/prfile/{}">{}</a></h2><hr />'.format(handle, handle))
+        file.write('<h2 class="page-header">Отчёт о выполнении домашнего задания <a href="https://codeforces.com/profile/{}">{}</a></h2><hr />'.format(handle, handle))
         response = json.loads(content)
 
         if response['status'] != 'OK':
@@ -150,14 +156,38 @@ for handle in handles:
 
         per_problem = {}
         included_in_homework = set()
+        data = sorted(response['result'], key=lambda k: k['creationTimeSeconds'])
 
-        data = response['result']
         for submission in data:
             problem = str(submission['problem']['contestId']) + submission['problem']['index']
             if problem not in per_problem:
                 per_problem[problem] = [submission]
             else:
                 per_problem[problem].append(submission)
+
+        one_shot = []
+        for problem, submissions in per_problem.items():
+            if len(submissions) == 1:
+                one_shot.append(submissions[0]['creationTimeSeconds'])
+                t = submissions[0]
+                t['handle'] = handle
+                all_one_shot_submissions.append(t)
+            else:
+                for submission in submissions:
+                    if submission['verdict'] == 'OK':
+                        # prolem was solved
+                        t = submission
+                        t['handle'] = handle
+                        all_one_shot_submissions.append(t)
+                        break
+
+        if len(one_shot) > 0:
+            for index in range(0, len(one_shot) - 1, 2):
+                if one_shot[index + 1] - one_shot[index] < 90:
+                    # less than 90 seconds to solve a problem!
+                    if handle not in too_fast_submissions:
+                        too_fast_submissions[handle] = 0
+                    too_fast_submissions[handle] = too_fast_submissions[handle] + 1
 
         index = 0
         homework_scores[handle] = {}
@@ -255,6 +285,38 @@ for handle in handles:
         file.write('</div></div></div>')
         file.write(FOOTER)
         time.sleep(5)
+
+# Check for copy-paste
+
+existing_hashes = set()
+
+copy_paste = {}
+
+index=0
+total = len(all_one_shot_submissions)
+for submission in all_one_shot_submissions:
+    index = index + 1
+    print('{}/{}'.format(index, total))
+    if submission['contestId'] == '100092':
+        continue  # skip trainings. source code cannot be obtained
+
+    url = 'https://codeforces.com/contest/{}/submission/{}'.format(submission['contestId'], submission['id'])
+    d = pyquery.PyQuery(url)
+    html = d("#program-source-text").html()
+    if html is None:
+        print('cannot obtain program sources for: {}'.format(url))
+        continue
+    code = ''.join(html.split())
+    hash_obj = hashlib.sha512(code.encode('utf-8'))
+    hex = hash_obj.hexdigest()
+    if hex in existing_hashes:
+        handle = submission['handle']
+        if handle not in copy_paste:
+            copy_paste[handle] = 0
+        copy_paste[handle] = copy_paste[handle] + 1
+
+    existing_hashes.add(hex)
+    time.sleep(1)
 
 # Generate finals page
 
@@ -378,10 +440,10 @@ with codecs.open('reports/2018.final.html', 'w', "utf-8") as file:
     file.write('<thead><tr><th>Handle</th><th>HW#1</th><th>HW#2</th><th>HW#3</th><th>HW#4</th>')
     file.write('<th>Test</th>')
     file.write('<th>B#1</th>')
-    #file.write('<th>B#2</th>')
-    #file.write('<th>B#3</th>')
     file.write('<th>Sum</th>')
     file.write('<th>PrS</th>')
+    file.write('<th>B#2</th>')
+    file.write('<th>PrS2</th>')
     file.write('</tr></thead>')
     file.write('<tbody>')
     for handle in handles:
@@ -394,8 +456,10 @@ with codecs.open('reports/2018.final.html', 'w', "utf-8") as file:
         sum = sum + test
         test = '-' if test == 0 else test
         b = additional[handle]['b']
-        file.write('<td>{}</td><td>{}</td><!--<td>{}</td><td>{}</td>-->'.format(test, b[0], b[1], b[2]))
-        sum = sum + b[0] + b[1] + b[2]
+        too_fast = 0 if handle not in too_fast_submissions else -too_fast_submissions[handle]
+        cp = 0 if handle not in copy_paste else -copy_paste[handle]
+        file.write('<td>{}</td><td>{}</td><!--<td>{}</td><td>{}</td>-->'.format(test, b[0], too_fast, cp))
+        sum = sum + b[0]# + too_fast + cp
         file.write('<td>{}</td>'.format(sum))
         if sum >= 25:
             final_score = 5
@@ -406,6 +470,16 @@ with codecs.open('reports/2018.final.html', 'w', "utf-8") as file:
         else:
             final_score = 2
         file.write('<td>{}</td>'.format(final_score))
+        sum += cp
+        if sum >= 25:
+            final_score = 5
+        elif sum >= 20:
+            final_score = 4
+        elif sum >= 15:
+            final_score = 3
+        else:
+            final_score = 2
+        file.write('<td>{}</td><td>{}</td>'.format(cp, final_score))
         file.write('</tr>')
 
     file.write('</tbody></table>')
@@ -420,8 +494,11 @@ with codecs.open('reports/2018.final.html', 'w', "utf-8") as file:
     file.write('<li>Минимальное количество баллов на 4: 20</li>')
     file.write('<li>Минимальное количество баллов на 3: 15</li>')
     file.write('</ul>')
+    file.write('<p> B#2 - Штрафы за копирование чужих решений')
+    file.write('<p> PrS2 - Предварительная оценка с учётом штрафов за копирование чужих решений')
     file.write('<p><strong>Важно!</strong> Данная система оценивания предварительная, минимальное количество баллов для получения той или иной оценки может быть изменено. Любая оценка может быть оспорена. Для подтверждения потребуется сдать одну или несколько задач на codeforces и ответить на несколько вопросов.')
     file.write('<p><strong>Важно!</strong> Некоторые сдали все домашние работы, но полностью их скопировали у других - я добавлю дополнительную колонку, которая будет показывать штрафы за копирование чужих решений')
+    file.write('<p>[18.12.2018] Информация о копировании чужих решений была добавлена.')
     file.write('<p><strong>Важно!</strong> На последних занятиях по практике я часто давал индивидуальные задания на codeforces - будет добавлена отдельная колонка с оценкой выполнения этих индивидуальных заданий')
     file.write('<p>Выполнение домашних заданий приносит баллы, даже если сроки сдачи уже прошли, однако помните про штрафы за копирование чужих работ!')
     file.write('<p>Если вы переживаете за свою оценку и заинтересованы в её повышении - напишите мне на почту (sachkov2011 at gmail dot com) для получения индивидуального задания')
