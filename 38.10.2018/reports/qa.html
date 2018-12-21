@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Отчёт о решении задач на codeforces</title>
+    <meta charset="UTF-8"/>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+          integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+            integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+            integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
+            integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+            crossorigin="anonymous"></script>
+    <style type="text/css">
+         body { padding-top: 50px; }
+
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Примеры вопросов и ответов</h1>
+            <p>
+                Данные вопросы являются примерами и я оставляю за собой право задавать несколько другие вопросы по тем
+                темам, которые мы проходили в семестре.
+            </p>
+            <p>
+                Вопросы разделены на несколько категорий, отсортированных по сложности. Подразумевается, что если вы
+                собираетесь отвечать на вопросы из сложной категории, то вы способны ответить и на вопросы из более
+                простых категорий.
+            </p>
+
+            <h2>Примеры совсем простых вопросов</h2>
+            <p>
+                <strong>Q: </strong> Что такое переменные? зачем они нужны? Что такое тип переменной?<br/>
+                <strong>A: </strong> Переменные - это именнованные участки памяти, предназначенные для хранения
+                каких-либо данных внутри программы, к которым можно обращаться для чтения и записи.
+                Тип переменной определяет её размер и формат данных, которые в ней хранятся (например целые числа, строки,
+                символы, вещественные числа)
+            </p>
+            <p>
+                <strong>Q: </strong> Как объявить переменную?<br/>
+                <strong>A: </strong> тип_перемнной имя_переменной;<br/>
+                int a;
+            </p>
+            <p>
+                <strong>Q: </strong> Как считывать данные с клавиатуры и выводить их на экран?<br/>
+                <strong>A: </strong> Используя cin, cout
+            </p>
+            <p>
+                <strong>Q: </strong> Напишите небольшой фрагмент кода для следующей задачи: На вход программе подаётся
+                10 чисел, необходимо вывести их сумму. <br />
+                <strong>A: </strong>
+                <pre>
+                    int sum = 0;
+                    int num;
+                    for (int i = 0; i < 10; ++i) {
+                        cin >> num;
+                        sum = sum + num;
+                    }
+                    cout << sum << endl;
+                </pre>
+            </p>
+            <p>
+                <strong>Q: </strong> Как переписать цикл for в цикл while и обратно<br />
+                <strong>A: </strong>
+                <pre>
+                    for (I; II; III) {
+                        IV;
+                    }
+
+                    //
+                    I;
+                    while (II) {
+                        IV;
+                        III;
+                    }
+                </pre>
+            </p>
+            <p>
+                <strong>Q: </strong> Зачем нужен оператор if?<br/>
+                <strong>A: </strong> TBD.
+            </p>
+
+            <h2>Примеры чуть более сложных вопросов (на 4)</h2>
+            <p>
+                <strong>Q: </strong> Что такое массивы?<br />
+                <strong>A: </strong> Массивы - это специальные переменные, предназначенные для хранения сразу нескольких
+                значений одного типа. Для объявления массива необходимо указать его размер.
+            </p>
+            <p>
+                <strong>Q: </strong> Как обращаться к элементам массива? <br />
+                <strong>A: </strong> Используя <code>[]</code>. Внутри квадратных скобок следует указать индекс значения,
+                к которому хочется обратиться для чтения или записи.
+            </p>
+            <p>
+                <strong>Q: </strong> Что такое область видимости? <br />
+                <strong>A: </strong> TBD.
+            </p>
+            <p>
+                <strong>Q: </strong> Как найти минимальный элемент в массиве? <br />
+                <strong>A: </strong> TBD.
+            </p>
+            <p>
+                <strong>Q: </strong> Зачем нужны циклы? <br/>
+                <strong>A: </strong> Для описания повторяющихся действий
+            </p>
+
+            <h2>Ещё более сложные вопросы</h2>
+            <p>
+                <strong>Q: </strong> Зачем нужно динамическое выделение памяти? <br/>
+                <strong>A: </strong> Динамическое выделение памяти позволяет выделять дополнительную память прямо во
+                время выполнения программы.
+            </p>
+            <p>
+                <strong>Q: </strong> Что такое объявление переменной? Что такое инициализация переменной? <br />
+                <strong>A: </strong> Объявление переменной - инструкция компилятору, которая включает в себя тип и имя
+                переменной. Объявление переменных необходимо для их дальнейшего использования. Инициализация переменной
+                 - это задание начального значения для переменной.
+            </p>
+            <p>
+                <strong>Q: </strong> В чём отличия между контейнерами vector и set?<br/>
+                <strong>A: </strong> TBD.
+            </p>
+            <p>
+                <strong>Q: </strong> Как вывести элементы контейнера set на экран? <br/>
+                <strong>A: </strong> TBD.
+            </p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <hr/>
+            <p>Все вопросы, пожелания, найденные ошибки и неточности можно сообщить <a
+                    href="https://github.com/AlexeySachkov/AlexeySachkov.github.io/issues/new">создав issue</a>
+            <p>Generated by <a
+                    href="https://github.com/AlexeySachkov/AlexeySachkov.github.io/blob/master/38.10.2018/main.py">python
+                script</a>. Big thanks <a href="https://codeforces.com/">Codeforces</a> for the <a
+                    href="http://codeforces.com/api/help">API</a>
+            <p>Powered by <a href="https://pages.github.com/">Github Pages</a> and <a href="https://getbootstrap.com/">Bootstrap</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>
