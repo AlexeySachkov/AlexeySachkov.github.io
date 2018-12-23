@@ -142,7 +142,13 @@ all_one_shot_submissions = []
 for handle in handles:
     url = BASE_URL + '?lang=ru&handle={}&from=1&count=1000'.format(handle)
     print(url)
-    content = urllib.request.urlopen(url).read()
+    connected = False
+    while not connected:
+        try:
+            content = urllib.request.urlopen(url).read()
+            connected = True
+        except OSError:
+            connected = False
 
     with codecs.open('reports/{}.html'.format(handle), 'w', "utf-8") as file:
         file.write(HEADER)
@@ -301,7 +307,16 @@ for submission in all_one_shot_submissions:
         continue  # skip trainings. source code cannot be obtained
 
     url = 'https://codeforces.com/contest/{}/submission/{}'.format(submission['contestId'], submission['id'])
-    d = pyquery.PyQuery(url)
+    connected = False
+    while not connected:
+        try:
+            d = pyquery.PyQuery(url)
+            connected = True
+        except TimeoutError:
+            connected = False
+        except OSError:
+            connected = False
+
     html = d("#program-source-text").html()
     if html is None:
         print('cannot obtain program sources for: {}'.format(url))
