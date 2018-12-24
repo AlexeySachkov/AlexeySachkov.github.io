@@ -34,7 +34,9 @@ handles = [
     'leyyyn',
     'Hac_ker.sashko',
     'Senchatay',
-    'Gleb_Yasakov'
+    'Gleb_Yasakov',
+    'Vanco132',
+    'Meow_Tory'
 ]
 
 
@@ -443,6 +445,14 @@ additional = {
     'Gleb_Yasakov': {
         'test': 4,
         'b': [4, 0, 0]
+    },
+    'Vanco132': {
+        'test': 3,
+        'b': [4, 0, 0]
+    },
+    'Meow_Tory': {
+        'test': 0,
+        'b': [0, 0, 0]
     }
 }
 
